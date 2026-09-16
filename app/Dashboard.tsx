@@ -78,19 +78,24 @@ export default function Dashboard({
         <div className="brand">
           <span className="dot">♪</span> Kore Music
         </div>
-        <div className="row">
-          <span className="muted" style={{ fontSize: 13 }}>
-            {online}/{studios.length} en ligne
-          </span>
-          <form action="/api/logout" method="post">
-            <button className="btn small">Déconnexion</button>
-          </form>
-        </div>
+        <form action="/api/logout" method="post">
+          <button className="btn small">Déconnexion</button>
+        </form>
       </div>
 
-      <div className="row" style={{ justifyContent: "space-between", marginBottom: 16 }}>
-        <h1 style={{ fontSize: 22, margin: 0, letterSpacing: "-0.02em" }}>Studios</h1>
-        <button className="btn primary small" onClick={() => setAdding((v) => !v)}>
+      <div
+        className="row"
+        style={{ justifyContent: "space-between", alignItems: "flex-end", marginBottom: 20, gap: 16, flexWrap: "wrap" }}
+      >
+        <div>
+          <h1 className="page-title">Studios</h1>
+          <p className="page-sub">
+            {studios.length === 0
+              ? "Ajoute ton premier studio pour commencer."
+              : `${online} sur ${studios.length} ${studios.length > 1 ? "studios en ligne" : "studio en ligne"} en ce moment.`}
+          </p>
+        </div>
+        <button className="btn primary" onClick={() => setAdding((v) => !v)}>
           {adding ? "Fermer" : "+ Ajouter un studio"}
         </button>
       </div>

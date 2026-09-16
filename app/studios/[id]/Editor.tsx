@@ -125,14 +125,24 @@ export default function Editor({
 
   return (
     <div className="wrap">
-      <div className="topbar">
-        <Link href="/" className="btn small">
-          ← Studios
-        </Link>
-        <button className="btn primary" onClick={save} disabled={pending}>
-          {pending ? "Enregistrement…" : "Enregistrer"}
-        </button>
+      <div className="sticky-actions">
+        <div className="row" style={{ justifyContent: "space-between" }}>
+          <Link href="/" className="btn small">
+            ← Tous les studios
+          </Link>
+          <div className="row" style={{ gap: 12 }}>
+            <span className="faint" style={{ fontSize: 13, maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {name || studio.name}
+            </span>
+            <button className="btn primary" onClick={save} disabled={pending}>
+              {pending ? "Enregistrement…" : "Enregistrer"}
+            </button>
+          </div>
+        </div>
       </div>
+
+      <h1 className="page-title" style={{ marginBottom: 4 }}>{name || studio.name}</h1>
+      <p className="page-sub" style={{ marginBottom: 20 }}>{address || "Réglages du studio"}</p>
 
       {/* Identité */}
       <div className="card" style={{ padding: 20, marginBottom: 8 }}>
@@ -149,7 +159,10 @@ export default function Editor({
       </div>
 
       {/* Playlists */}
-      <div className="section-title">Playlists</div>
+      <div className="section">
+        <h2 className="section-title">Playlists</h2>
+        <p className="section-desc">Les playlists Spotify que ce studio peut jouer. Donne un nom court à chacune.</p>
+      </div>
       <div className="card" style={{ padding: 18 }}>
         {playlists.length === 0 && (
           <p className="faint" style={{ marginTop: 0 }}>Aucune playlist. Ajoutez-en une.</p>
@@ -169,9 +182,14 @@ export default function Editor({
       </div>
 
       {/* Planning */}
-      <div className="section-title" style={{ display: "flex", justifyContent: "space-between" }}>
-        <span>Horaires</span>
-        <button className="btn small" onClick={copyMonToWeek}>Copier lundi sur la semaine</button>
+      <div className="section">
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-end", gap: 12, flexWrap: "wrap" }}>
+          <div>
+            <h2 className="section-title">Horaires</h2>
+            <p className="section-desc">Quelle playlist joue à quelle heure. « → 00:00 » = jusqu'à minuit.</p>
+          </div>
+          <button className="btn small" onClick={copyMonToWeek}>Copier lundi sur mar → ven</button>
+        </div>
       </div>
       {DAYS.map((day) => (
         <div className="day-block" key={day}>
@@ -187,22 +205,25 @@ export default function Editor({
                 <input type="time" value={s.de} onChange={(e) => setSlot(day, i, "de", e.target.value)} />
                 <span className="sep">→</span>
                 <input type="time" value={s.a} onChange={(e) => setSlot(day, i, "a", e.target.value)} />
-                <select value={s.playlist} onChange={(e) => setSlot(day, i, "playlist", e.target.value)}>
+                <select className="pl-select" value={s.playlist} onChange={(e) => setSlot(day, i, "playlist", e.target.value)}>
                   <option value="">— playlist —</option>
                   {playlistKeys.map((k) => (
                     <option key={k} value={k}>{k}</option>
                   ))}
                 </select>
-                <button className="iconbtn" onClick={() => delSlot(day, i)} title="Supprimer">✕</button>
+                <button className="iconbtn del" onClick={() => delSlot(day, i)} title="Supprimer">✕</button>
               </div>
             ))
           )}
         </div>
       ))}
-      <p className="hint">« → 00:00 » signifie jusqu'à minuit. En dehors des créneaux, la musique se met en pause.</p>
+      <p className="hint">En dehors des créneaux, la musique se met en pause. Un jour sans créneau reste silencieux.</p>
 
       {/* Options */}
-      <div className="section-title">Réglages</div>
+      <div className="section">
+        <h2 className="section-title">Réglages</h2>
+        <p className="section-desc">Comportement de l'agent sur le poste du studio.</p>
+      </div>
       <div className="card" style={{ padding: 18 }}>
         <div className="row wrap" style={{ gap: 20 }}>
           <label className="row" style={{ gap: 8 }}>
@@ -231,22 +252,29 @@ export default function Editor({
       </div>
 
       {/* Installation */}
-      <div className="section-title">Installation sur le poste du studio</div>
-      <div className="card" style={{ padding: 18 }}>
-        <p className="muted" style={{ marginTop: 0, fontSize: 13.5 }}>
-          Sur le PC du studio : mettre l'exe dans un dossier, y déposer ce fichier <code>central.json</code>,
-          puis double-cliquer l'exe. Le studio se connecte à Spotify une fois et apparaît ici.
-        </p>
-        <div className="row wrap" style={{ gap: 10, marginBottom: 12 }}>
-          <button className="btn primary small" onClick={downloadCentral}>⬇ Télécharger central.json</button>
+      <div className="section">
+        <h2 className="section-title">Installation sur le poste du studio</h2>
+        <p className="section-desc">À faire une fois, sur le PC d'accueil du studio.</p>
+      </div>
+      <div className="card" style={{ padding: 20 }}>
+        <ol className="steps" style={{ marginBottom: 16 }}>
+          <li>Mettre l'exe <b>Kore Spotify Scheduler</b> dans un dossier sur le PC du studio.</li>
+          <li>Télécharger le fichier <code>central.json</code> ci-dessous et le déposer dans le même dossier.</li>
+          <li>Double-cliquer l'exe, puis connecter le compte Spotify Premium du studio dans le navigateur.</li>
+          <li>Le studio apparaît ici en vert. C'est terminé.</li>
+        </ol>
+        <div className="row wrap" style={{ gap: 10, marginBottom: 14 }}>
+          <button className="btn primary" onClick={downloadCentral}>⬇ Télécharger central.json</button>
           <button className="btn small" onClick={rotate}>Régénérer la clé</button>
         </div>
-        <div className="hint" style={{ marginBottom: 6 }}>Clé de l'agent (secrète) :</div>
+        <div className="hint" style={{ marginBottom: 6, marginTop: 0 }}>Clé de l'agent (secrète, ne pas partager) :</div>
         <div className="key-box">{agentKey}</div>
       </div>
 
       {/* Danger */}
-      <div className="section-title">Zone sensible</div>
+      <div className="section">
+        <h2 className="section-title">Zone sensible</h2>
+      </div>
       <div className="card" style={{ padding: 18 }}>
         <div className="row" style={{ justifyContent: "space-between" }}>
           <span className="muted" style={{ fontSize: 13.5 }}>Supprimer ce studio du central.</span>
