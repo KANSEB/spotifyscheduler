@@ -75,10 +75,34 @@ export function emptyPlanning(): Record<Day, Slot[]> {
   };
 }
 
+// Planning et playlists d'origine du programme Kore. Chaque nouveau studio
+// démarre avec ça ; on ajuste ensuite par studio si besoin.
+const SEMAINE: Slot[] = [
+  { de: "06:00", a: "08:30", playlist: "calme" },
+  { de: "08:30", a: "19:00", playlist: "journee" },
+  { de: "19:00", a: "00:00", playlist: "calme" },
+];
+
 export function starterConfig(): StudioConfig {
   return {
-    playlists: {},
-    planning: emptyPlanning(),
+    playlists: {
+      calme: "spotify:playlist:1QYZpoloH8CjAS9nowlkzW",
+      journee: "spotify:playlist:1ZCWKCsKHTjAmAc3ZiqiMS",
+      weekend: "spotify:playlist:2oUCHM2WN9owcBfGO0cWLb",
+    },
+    planning: {
+      lundi: [...SEMAINE],
+      mardi: [...SEMAINE],
+      mercredi: [...SEMAINE],
+      jeudi: [...SEMAINE],
+      vendredi: [...SEMAINE],
+      samedi: [{ de: "09:00", a: "00:00", playlist: "weekend" }],
+      dimanche: [
+        { de: "09:00", a: "11:00", playlist: "calme" },
+        { de: "11:00", a: "17:30", playlist: "journee" },
+        { de: "17:30", a: "00:00", playlist: "calme" },
+      ],
+    },
     options: { ...DEFAULT_OPTIONS },
   };
 }
