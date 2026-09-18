@@ -116,10 +116,21 @@ export default function Dashboard({
         </form>
       )}
 
+      <div className="card" style={{ padding: "16px 18px", marginBottom: 18, background: "var(--bg-elev-2)" }}>
+        <div className="faint" style={{ fontSize: 12.5, fontWeight: 650, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
+          Comment ça marche
+        </div>
+        <div className="row wrap" style={{ gap: 18, fontSize: 13, color: "var(--text-dim)" }}>
+          <span><b style={{ color: "var(--text)" }}>1.</b> Clique un studio pour régler ses playlists et horaires.</span>
+          <span><b style={{ color: "var(--text)" }}>2.</b> Télécharge son <code>central.json</code> depuis sa fiche.</span>
+          <span><b style={{ color: "var(--text)" }}>3.</b> Pose-le à côté de l'exe sur le PC du studio. Il passe en vert ici.</span>
+        </div>
+      </div>
+
       {studios.length === 0 ? (
         <div className="card" style={{ padding: 40, textAlign: "center" }}>
           <p className="muted" style={{ margin: 0 }}>
-            Aucun studio pour l'instant. Cliquez sur « Ajouter un studio » pour commencer.
+            Aucun studio pour l'instant. Clique sur « Ajouter un studio » pour commencer.
           </p>
         </div>
       ) : (
@@ -160,9 +171,15 @@ export default function Dashboard({
                   )}
                 </div>
 
-                <div className="faint" style={{ fontSize: 12, borderTop: "1px solid var(--line-soft)", paddingTop: 10 }}>
-                  Prévu maintenant : {s.scheduled}
-                  {s.deviceName ? ` · ${s.deviceName}` : ""}
+                <div
+                  className="row"
+                  style={{ justifyContent: "space-between", fontSize: 12, borderTop: "1px solid var(--line-soft)", paddingTop: 10 }}
+                >
+                  <span className="faint">
+                    Prévu : {s.scheduled}
+                    {s.deviceName ? ` · ${s.deviceName}` : ""}
+                  </span>
+                  <span style={{ color: "var(--accent-strong)", fontWeight: 600 }}>Configurer →</span>
                 </div>
               </Link>
             );

@@ -1,4 +1,13 @@
 import { neon } from "@neondatabase/serverless";
+import crypto from "crypto";
+import { starterConfig } from "./types";
+
+// Studios Kore créés automatiquement au premier démarrage (une seule fois).
+const INITIAL_STUDIOS = [
+  { id: "kore-reaumur", name: "KORE RÉAUMUR" },
+  { id: "kore-rl", name: "KORE RL" },
+  { id: "kore-monceau", name: "KORE MONCEAU" },
+];
 
 function connString(): string {
   const url =
@@ -49,7 +58,29 @@ export async function ensureSchema(): Promise<void> {
       now_playing  jsonb,
       version      text NOT NULL DEFAULT ''
     )`;
+  await db`
+    CREATE TABLE IF NOT EXISTS meta (
+      key        text PRIMARY KEY,
+      value      text NOT NULL,
+      updated_at timestamptz NOT NULL DEFAULT now()
+    )`;
+  await seedInitialStudios();
   migrated = true;
+}
+
+/** Crée les 3 studios Kore une seule fois (marqueur dans la table meta). */
+async function seedInitialStudios(): Promise<void> {
+  const db = sql();
+  const flag = (await db`SELECT 1 FROM meta WHERE key = 'seeded_studios_v1'`) as unknown as unknown[];
+  if (flag.length > 0) return;
+  for (const s of INITIAL_STUDIOS) {
+    const key = crypto.randomBytes(24).toString("base64url");
+    await db`
+      INSERT INTO studios (id, name, address, agent_key, config)
+      VALUES (${s.id}, ${s.name}, '', ${key}, ${JSON.stringify(starterConfig())}::jsonb)
+      ON CONFLICT (id) DO NOTHING`;
+  }
+  await db`INSERT INTO meta (key, value) VALUES ('seeded_studios_v1', 'done') ON CONFLICT (key) DO NOTHING`;
 }
 
 export function dbConfigured(): boolean {
